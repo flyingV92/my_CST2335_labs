@@ -11,27 +11,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'My_CST2235_Labs',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+       colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'CST2335 - Lab 2 - W25'),
+        debugShowCheckedModeBanner: false,
+
     );
   }
 }
@@ -75,33 +62,38 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+    Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+      drawer:Drawer(child:Text("Hello, I made the burger!")),
+    appBar: AppBar(
+
+    backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+    // Here we take the value from the MyHomePage object that was created by
+    // the App.build method, and use it to set our appbar title.
+    title: Text(widget.title),
+        actions: [
+          OutlinedButton(onPressed: () { }, child:Text("David")),
+          OutlinedButton(onPressed: (){ }, child: Text("Lab"))]
       ),
       body: Center(
 
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
              Text(
-              'You have pushed the button this many times:',
+              'BROWSE CATEGORIES',
                 style: TextStyle(fontSize: myFontSize )
             ),
             Text(
-              '$_counter',
-              style: TextStyle(fontSize: myFontSize )
+              'Not sure about exactly which recipe you"re looking for? Do a search, or dive into our most popular categories.',
+              style: TextStyle(fontSize: 16 )
+            ),
+            Text(
+                'BY MEAT',
+                style: TextStyle(fontSize: myFontSize )
             ),
 
-            Slider(value: _counter, max:100.0, onChanged: setNewValue, min: 0.0)
           ],
         ),
       ),
@@ -110,6 +102,11 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+        bottomNavigationBar: BottomNavigationBar(items: [
+          BottomNavigationBarItem( icon: Icon(Icons.access_alarm), label: 'Alarm Clock' ),
+          BottomNavigationBarItem( icon: Icon(Icons.accessibility), label: 'You'  ),
+        ],
+          onTap: (buttonIndex) {  } ,
+        ));
   }
 }
