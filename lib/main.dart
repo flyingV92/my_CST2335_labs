@@ -61,6 +61,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   var _counter = 0.0;
   var myFontSize = 30.0;
+  var isChecked = false;
 
   void setNewValue(double value)
   {
@@ -104,8 +105,11 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: TextStyle(fontSize: myFontSize )
             ),
-      ElevatedButton(onPressed: () {},  child:Image.asset("images/algonquin.jpg", width: 200, height:200)  ),
-    Slider(value: _counter, max:100.0, onChanged: setNewValue, min: 0.0)
+      ElevatedButton(onPressed: () {}, child: Padding(
+          padding: EdgeInsets.all(16.0),child:Image.asset("images/algonquin.jpg", width: 200, height:200)  ),),
+    Slider(value: _counter, max:100.0, onChanged: setNewValue, min: 0.0),
+            Checkbox(value: isChecked, onChanged:(newValue) { setState( () { isChecked = newValue !; } ); })
+
           ],
         ),
       ),
