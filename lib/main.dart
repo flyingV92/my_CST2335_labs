@@ -4,6 +4,10 @@ void main() {
   runApp(const MyApp());
 }
 
+//void buttonClicked(){
+
+//}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -69,8 +73,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     setState(() {
-          if( _counter<=99.0)
-        _counter++;
+          if( _counter <= 99.0) {
+        _counter++;}
     });
   }
 
@@ -100,8 +104,8 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: TextStyle(fontSize: myFontSize )
             ),
-
-            Slider(value: _counter, max:100.0, onChanged: setNewValue, min: 0.0)
+      ElevatedButton(onPressed: () {},  child:Image.asset("images/algonquin.jpg", width: 200, height:200)  ),
+    Slider(value: _counter, max:100.0, onChanged: setNewValue, min: 0.0)
           ],
         ),
       ),
