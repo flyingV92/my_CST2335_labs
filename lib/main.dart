@@ -62,6 +62,24 @@ class _MyHomePageState extends State<MyHomePage> {
   var _counter = 0.0;
   var myFontSize = 30.0;
   var isChecked = false;
+  late TextEditingController _controller;
+
+  String setText() {
+    _controller.text = "The new text";
+    return _controller.text;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   void setNewValue(double value)
   {
@@ -107,6 +125,11 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
       ElevatedButton(onPressed: () {}, child: Padding(
           padding: EdgeInsets.all(16.0),child:Image.asset("images/algonquin.jpg", width: 200, height:200)  ),),
+          TextField(controller: _controller,
+              decoration: InputDecoration(
+                  hintText:"this is my test",
+                  labelText: "test test",
+                  border: OutlineInputBorder())),
     Slider(value: _counter, max:100.0, onChanged: setNewValue, min: 0.0),
             Checkbox(value: isChecked, onChanged:(newValue) { setState( () { isChecked = newValue !; } ); }),
             Switch(value: isChecked, onChanged:(newValue) { setState( () { isChecked = newValue !; } ); })
