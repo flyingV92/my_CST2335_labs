@@ -17,25 +17,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
+
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      debugShowCheckedModeBanner: false,
+      home: const MyHomePage(title: 'GonqDrive - Mockup'),
     );
   }
 }
@@ -60,27 +48,48 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var _counter = 0.0;
-  var myFontSize = 30.0;
-  var isChecked = false;
-  late TextEditingController _controller;
+  var myFontSize = 50.0;
+  late bool passCheck;
+  late TextEditingController _logincontrol;
+  late TextEditingController _passcontrol;
+  var imageSource = '../images/qmark.png';
+  var imageSourcePass = '../images/bulb.png';
+  var imageSourceFail = '../images/stop.png';
 
-  String setText() {
-    _controller.text = "The new text";
-    return _controller.text;
+  String getText() {
+    var myPass = _passcontrol.value.text;
+    print (myPass);
+    return myPass;
+
   }
+
+
+   setImageChange() {
+    if(_passcontrol.value.text == 'QWERTY123') {
+      setState(() {
+        imageSource = imageSourcePass;  });
+    }
+    else {
+      setState(() {
+        imageSource = imageSourceFail;      });
+    }
+    }
+
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController();
+    _logincontrol = TextEditingController();
+    _passcontrol = TextEditingController();
   }
+
 
   @override
   void dispose() {
-    _controller.dispose();
+    _passcontrol.dispose();
+    _logincontrol.dispose();
     super.dispose();
   }
-
   void setNewValue(double value)
   {
     setState(() {
@@ -110,39 +119,43 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
+      body:
+          DecoratedBox(
+        decoration: BoxDecoration(
+        image: DecorationImage(image: AssetImage("images/algonquin.jpg"), opacity: 0.2)),
 
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
+
              Text(
-              'You have pushed the button this many times:',
-                style: TextStyle(fontSize: myFontSize )
+              'Login Window',
+                style: TextStyle(fontSize: myFontSize
+                )
             ),
-            Text(
-              '$_counter',
-              style: TextStyle(fontSize: myFontSize )
-            ),
-      ElevatedButton(onPressed: () {}, child: Padding(
-          padding: EdgeInsets.all(16.0),child:Image.asset("images/algonquin.jpg", width: 200, height:200)  ),),
-          TextField(controller: _controller,
+          TextField(controller: _logincontrol,
               decoration: InputDecoration(
-                  hintText:"this is my test",
-                  labelText: "test test",
-                  border: OutlineInputBorder())),
-    Slider(value: _counter, max:100.0, onChanged: setNewValue, min: 0.0),
-            Checkbox(value: isChecked, onChanged:(newValue) { setState( () { isChecked = newValue !; } ); }),
-            Switch(value: isChecked, onChanged:(newValue) { setState( () { isChecked = newValue !; } ); })
+                  hintText:"Username/Email",
+                  labelText: "Enter your username",
+                  border: OutlineInputBorder()),
+          obscureText: false,
+          style: TextStyle(fontSize: myFontSize)),
 
+            TextField(controller: _passcontrol,
+                decoration: InputDecoration(
+                    hintText:"Password",
+                    labelText: "Enter your password",
+                    border: OutlineInputBorder()),
+              obscureText: true,
+            style: TextStyle(fontSize: myFontSize),),
+            ElevatedButton(onPressed: setImageChange, child: Padding(
+                padding: EdgeInsets.all(10.0),child: Text('Login')),),
+           Image.asset(imageSource, width: 300, height: 300)
 
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+  ]
+        )
+          )
     );
   }
 }
