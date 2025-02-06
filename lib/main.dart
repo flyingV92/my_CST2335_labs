@@ -1,6 +1,7 @@
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'OtherPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,13 +14,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Named Routes Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
       home: const MyHomePage(title: 'GonqDrive - Mockup'),
+      initialRoute:'/',
+      routes:
+  { '/OtherPage': (context) => OtherPage(),
+  },
+
     );
   }
 }
@@ -32,6 +38,14 @@ class MyHomePage extends StatefulWidget {
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
+
+class DataRepository{
+  static String loginName = '';
+  static String firstName = '';
+  static String lastName = '';
+  static String phoneNumber = '';
+  static String emailAddress = '';
+ }
 
 class _MyHomePageState extends State<MyHomePage> {
   //var _counter = 0.0;
@@ -57,14 +71,17 @@ class _MyHomePageState extends State<MyHomePage> {
          prefs.setString('Login', _logincontrol.value.text);
          prefs.setString('Password', _passcontrol.value.text);
         print(_logincontrol.text);
+        DataRepository.loginName = _logincontrol.text;
         print(_passcontrol.text);
         Navigator.pop(context);
+        Navigator.pushNamed( context, '/OtherPage');
       }
       );
     }
     else {
       setState(() {
         imageSource = imageSourceFail;
+        Navigator.pop(context);
       });
     }
 
@@ -115,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: const Text('Uh oh Spaghetti-ooo'),
+        title: const Text('You pressed login.'),
         content:
             const Text('Want to save your username/password for next time?'),
         actions: <Widget>[
@@ -160,6 +177,7 @@ class _MyHomePageState extends State<MyHomePage> {
           });
           }));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
       setState(()  {
         imageSource = imageSourcePass;
        }
