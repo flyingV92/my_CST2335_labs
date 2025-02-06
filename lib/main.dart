@@ -1,6 +1,5 @@
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'profile_page.dart';
 
 void main() {
@@ -14,13 +13,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Named Routes Demo',
+      title: 'gonqDrive',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
-      home: const MyHomePage(title: 'GonqDrive - Mockup'),
+      home: const MyHomePage(title: 'gONQDRIVER - Mockup'),
       initialRoute:'/',
       routes:
   { '/OtherPage': (context) => OtherPage(),
@@ -40,11 +39,43 @@ class MyHomePage extends StatefulWidget {
 }
 
 class DataRepository{
-  static String loginName = '';
-  static String firstName = '';
-  static String lastName = '';
-  static String phoneNumber = '';
-  static String emailAddress = '';
+  static final EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
+
+  //this function should load the variables from EncryptedSharedPreferences
+  static loadData() {
+    prefs.getString('Login');
+    prefs.getString('Password');
+  }
+
+    static loadProfile() {
+  // String[] profileData = new String;
+    prefs.getString('FirstName');
+    prefs.getString('LastName');
+    prefs.getString('UserPhone');
+    prefs.getString('UserEmail');
+  }
+
+  //this function should save the variables to EncryptedSharedPreferences.
+ static saveData(String userLoginName, String userPassword) {
+   prefs.setString('Login', userLoginName);
+   prefs.setString('Password', userPassword);
+ }
+
+ static saveProfile(String userFirstName, String userLastName, String userPhone, String userEmail) {
+    prefs.setString('FirstName', userFirstName);
+    prefs.setString('LastName', userLastName);
+    prefs.setString('UserPhone', userPhone);
+    prefs.setString('UserEmail', userEmail);
+    print (prefs.getString('UserEmail'));
+  }
+
+  static String userLoginName = '';
+  static String userPassword = '';
+
+  static String? userFirstName;
+  static String? userLastName;
+  static String? userPhone;
+  static  String? userEmail;
  }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -68,11 +99,14 @@ class _MyHomePageState extends State<MyHomePage> {
     else if (_passcontrol.value.text == 'QWERTY123') {
       setState(()  {
         imageSource = imageSourcePass;
-         prefs.setString('Login', _logincontrol.value.text);
-         prefs.setString('Password', _passcontrol.value.text);
-        print(_logincontrol.text);
-        DataRepository.loginName = _logincontrol.text;
-        print(_passcontrol.text);
+
+        DataRepository.userLoginName = _logincontrol.value.text;
+        DataRepository.userPassword = _passcontrol.value.text;
+        DataRepository.saveData(_logincontrol.value.text, _passcontrol.value.text );
+      //  DataRepository.prefs.setString('Password', _passcontrol.value.text);
+        //print(_logincontrol.text);
+        DataRepository.userLoginName = _logincontrol.text;
+       // print(_passcontrol.text);
         Navigator.pop(context);
         Navigator.pushNamed( context, '/OtherPage');
       }
@@ -88,10 +122,9 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
 
-  void clearLogin() async {
+   clearLogin() async {
     await prefs.remove('LoginName');
     await prefs.remove('Password');
-    Navigator.pop(context);
   }
 
   void closeBox() {
@@ -109,7 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      FilledButton(onPressed: clearLogin, child: Text('OK'))
+                      FilledButton(onPressed: () {clearLogin();Navigator.pop(context);}, child: Text('OK'))
                     ])
               ],
             ));
@@ -137,7 +170,7 @@ class _MyHomePageState extends State<MyHomePage> {
             const Text('Want to save your username/password for next time?'),
         actions: <Widget>[
           Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-            FilledButton(onPressed: clearLogin, child: Text('Cancel')),
+            FilledButton(onPressed: () {clearLogin();Navigator.pop(context);}, child: Text('Cancel')),
             FilledButton(
                 onPressed: () {
                   saveLoginDetails();
@@ -160,29 +193,29 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
   void pullLogin() async {
-    var oldLogin = await prefs.getString("Login");
-    var oldPass = await prefs.getString('Password');
-    if (oldLogin == '' || oldPass == '') {
-      return;
-    }
-    else {
-      _logincontrol.text = oldLogin;
-      _passcontrol.text = oldPass;
-      final snackBar = SnackBar( content: Text('Credentials loaded.'),
-          action:SnackBarAction(label:'Hide', onPressed: (){ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            _logincontrol.text = '';
-            _passcontrol.text = '';
+      var oldLogin = await DataRepository.prefs.getString("Login");
+      var oldPass = await DataRepository.prefs.getString('Password');
+      if (oldLogin == '' || oldPass == '') {
+        return;
+      }
+      else {
+        _logincontrol.text = oldLogin;
+        _passcontrol.text = oldPass;
+        final snackBar = SnackBar( content: Text('Credentials loaded.'),
+            action:SnackBarAction(label:'Hide', onPressed: (){ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            //    _logincontrol.text = '';
+            //   _passcontrol.text = '';
             setState(() {
-            imageSource = imageSourceBase;
-          });
-          }));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              imageSource = imageSourceBase;
+            });
+            }));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
-      setState(()  {
-        imageSource = imageSourcePass;
-       }
-       );
-  }
+        setState(()  {
+          imageSource = imageSourcePass;
+        }
+        );
+      }
   }
 
   @override
@@ -196,9 +229,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          // TRY THIS: Try changing the color here to a specific color (to
-          // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-          // change color while the other colors stay the same.
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
