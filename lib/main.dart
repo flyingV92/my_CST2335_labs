@@ -1,7 +1,7 @@
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'OtherPage.dart';
+import 'profile_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -54,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late TextEditingController _logincontrol;
   late TextEditingController _passcontrol;
   var imageSource = '../images/qmark.png';
-  var imageSourceBase = '../images/qmark.png';
+  var imageSourceBase = '../images/Qmark.png';
   var imageSourcePass = '../images/bulb.png';
   var imageSourceFail = '../images/stop.png';
   final EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
