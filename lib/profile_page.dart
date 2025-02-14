@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:my_cst2335_labs/main.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -26,90 +28,120 @@ class OtherPageState extends State<OtherPage> {
     _userPhoneControl = TextEditingController();
     _userEmailControl = TextEditingController();
 
-   //  if (DataRepository.userFirstName != '') {
-    //    _userFirstNameControl?.value = DataRepository.userFirstName as TextEditingValue;
-    //   _userLastNameControl?.value = DataRepository.userLastName as TextEditingValue;
-    //   _userPhoneControl?.value = DataRepository.userPhone as TextEditingValue;
-    //   _userEmailControl?.value = DataRepository.userEmail as TextEditingValue;
-
-
-
     var openSnackBar = SnackBar(
-        content: Text("Welcome bac9k ${DataRepository.userFirstName} 9!"),
+        content: Text("Welcome bac9k ${DataRepository.userLoginName} 9!"),
         action: SnackBarAction(label: 'Hide', onPressed: () {}),
         duration: Duration(seconds: 6));
     WidgetsBinding.instance.addPostFrameCallback(
-        (_) => ScaffoldMessenger.of(context).removeCurrentSnackBar());
+            (_) => ScaffoldMessenger.of(context).removeCurrentSnackBar());
     WidgetsBinding.instance.addPostFrameCallback(
-        (_) => ScaffoldMessenger.of(context).showSnackBar(openSnackBar));
-  }
+            (_) => ScaffoldMessenger.of(context).showSnackBar(openSnackBar));
 
-  void pullUserProfile() async {
-    var oldUserFirstName = await DataRepository.prefs.getString("FirstName");
-    var oldUserLastName = await DataRepository.prefs.getString("LastName");
-    var oldUserPhoneNumber = await DataRepository.prefs.getString("userPhone");
-    var oldUserEmailAddress = await DataRepository.prefs.getString("userEmail");
+  pullLogin();
+}
+//*******
 
-//TODO: fix this part up.
-    if (oldUserFirstName == '' || oldUserLastName == '' ||
-        oldUserPhoneNumber == '' || oldUserEmailAddress == '') {
+  void pullLogin() async {
+    var oldFirst = await DataRepository.prefs.getString('FirstName');
+    var oldLast = await DataRepository.prefs.getString('LastName');
+    var oldPhone = await DataRepository.prefs.getString('UserPhone');
+    var oldEmail = await DataRepository.prefs.getString('UserEmail');
+    if (oldFirst == '' || oldLast == '' || oldPhone == '' || oldEmail == '') {
       return;
     }
     else {
-      _userFirstNameControl.text = oldUserFirstName;
-      _userLastNameControl.text = oldUserLastName;
-      _userPhoneControl.text = oldUserPhoneNumber;
-      _userEmailControl.text = oldUserEmailAddress;
-      final snackBar = SnackBar(
-          content: Text('Profile loaded.'),
-          action: SnackBarAction(label: 'Hide', onPressed: () {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          })
-      );
+      _userFirstNameControl.text = oldFirst;
+      _userLastNameControl.text = oldLast;
+      _userPhoneControl.text = oldPhone;
+      _userEmailControl.text = oldEmail;
+
+      final snackBar = SnackBar( content: Text('Credentials loaded.'),
+          action:SnackBarAction(label:'Hide', onPressed: (){ScaffoldMessenger.of(context).hideCurrentSnackBar();}));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
-//*******
 
+  void etPhoneHome (String uriInput, String category)  {
+    Uri uriMethod;
+    switch (category) {
+      case '1':
+       Uri uriMethod = Uri(scheme: 'tel', path: uriInput);
 
-
-  void etPhoneHome () async {
-    final Uri phoneUri = Uri(
-        scheme: 'tel',
-        path: '888-123-4567');
-    await launchUrl(phoneUri);
-   // print(phoneUri);
-  }
-  void etSmsHome () async {
-    final Uri smsUri = Uri(scheme: 'sms', path: '888-142-2423');
-    await launchUrl(smsUri);
-  //  print(smsUri);
-  }
-
-  void etEmailHome () async {
-    final Uri emailUri = Uri(
-        scheme: 'mailto',
-        path: 'foo@foo.com',
-        queryParameters: {'subject': 'Email Subject Here!'});
-       await launchUrl(emailUri);
-   // print(emailUri);
-  }
-  /*
-              else {
-        final snackBar4 = SnackBar( content: Text('Cant access email.'),
-            action:SnackBarAction(label:'Hide', onPressed: (){ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            }
-            )
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar4);
+      break;
+      case '2':
+        Uri uriMethod = Uri(scheme: 'sms', path: uriInput);
+      break;
+      case '3':
+        Uri uriMethod = Uri(scheme: 'mailto', path: uriInput,
+            queryParameters: {'subject': 'Email Subject Here!'});
+      break;
+          };
+    canLaunchUrl(uriMethod).then((bool itCan) {
+  //LAB 5 DEMO: FOR TESTING IF IF ERRORS WORK.
+     itCan = false;
+      if(itCan)
+    {
+      if(category == '1') {
+        final Uri smsUri = Uri(scheme: 'tel', path: uriInput.toString());
+        print(smsUri);
+        launchUrl(smsUri);
+      }
+      else if (category == '2') {
+        final Uri phoneUri = Uri(scheme:'sms', path: uriInput.toString());
+        print(phoneUri);
+        launchUrl(phoneUri);
+      }
+      else if (category == '3') {
+        final Uri emailUri = Uri(scheme: 'mailto', path: 'foo@foo.com',
+            queryParameters: {'subject': 'Email Subject Here!'});
+        print(emailUri);
+        launchUrl(emailUri);
       }
     }
+
+      /*
+      else {
+        var snackBar5 = (String? input) => SnackBar(content: Text(input ?? 'Non-specfic error'),
+            action:SnackBarAction(label:'Hide', onPressed: (){ScaffoldMessenger.of(context).hideCurrentSnackBar();}));
+
+        if(category ==  '1') {
+          var input = "Can't do SMS here.";
+          ScaffoldMessenger.of(context).showSnackBar(snackBar5(input));
+        }
+        else if(category == '2') {
+          var input = "Can't phone home.";
+          ScaffoldMessenger.of(context).showSnackBar(snackBar5(input));
+        }
+        else if(category == '3') {
+          var input = "Can't email on this device.";
+          ScaffoldMessenger.of(context).showSnackBar(snackBar5(input));
+        };
+  }*/ else {
+alertBox();
+        };
+  }
+    );}
+
+  alertBox() {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Uri Error'),
+        content:
+        const Text("Your device can't use that method."),
+        actions: <Widget>[
+          Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+            FilledButton(onPressed: () {;Navigator.pop(context);}, child: Text('OK')),
+          ])
+        ],
+      ),
     );
-    }*/
+  }
 
   void showSnackBar3(String loginName) {
+    var loginTitle = loginName;
     var snackBar2 = SnackBar(
-        content: Text("Welcome Back $loginName"),
+        content: Text("Welcome Back $loginTitle"),
         action: SnackBarAction(
             label: 'Hide',
             onPressed: () {
@@ -124,7 +156,7 @@ class OtherPageState extends State<OtherPage> {
         appBar: AppBar(
           backgroundColor: Colors.cyan,
           title:
-              Text('Welcome to my other page, ${DataRepository.userFirstName} !'),
+              Text('Welcome to my other page, ${DataRepository.userLoginName} !'),
         ),
         body: DecoratedBox(
             decoration: BoxDecoration(
@@ -135,7 +167,7 @@ class OtherPageState extends State<OtherPage> {
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text('You hit page two, ${DataRepository.userFirstName} !',
+                  Text('You hit page two, ${DataRepository.userLoginName} !',
                       style: TextStyle(fontSize: 24.0)),
                   TextField(
                       controller: _userFirstNameControl,
@@ -162,14 +194,17 @@ class OtherPageState extends State<OtherPage> {
                     //add phone and chat buttons here.
                     ElevatedButton.icon(
                       onPressed: () {
-                        etPhoneHome();
+                        var string99 = _userPhoneControl.text;
+
+                        etPhoneHome(string99, '1');
                       },
                       icon: const Icon(Icons.phone),
                       label: const Text(''),
                     ),
                     ElevatedButton.icon(
                         onPressed: () {
-                          etSmsHome();
+                          var string99 = _userPhoneControl.text;
+                          etPhoneHome(string99, '2');
                         },
                         icon: const Icon(Icons.sms),
                         label: const Text('')),
@@ -188,7 +223,8 @@ class OtherPageState extends State<OtherPage> {
                     //add phone and chat buttons here.
                     ElevatedButton.icon(
                       onPressed: () {
-                        etEmailHome();
+                        var string99 = _userEmailControl.text;
+                        etPhoneHome(string99, '3');
                       },
                       icon: const Icon(Icons.email),
                       label: const Text(''),
@@ -206,14 +242,10 @@ class OtherPageState extends State<OtherPage> {
                         child: Text('Back to Login')),
                   ),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async{
                   print('button pressed');
 
-                  DataRepository.saveProfile(_userFirstNameControl.value.text, _userLastNameControl.value.text,_userPhoneControl.value.text, _userEmailControl.value.text);
-                  print ("First Name is ${_userFirstNameControl.value.text}.");
-                  print ("Last Name is ${_userLastNameControl.value.text}.");
-                  print ("User Phone is ${_userPhoneControl.value.text}.");
-                  print ("User Email is ${_userEmailControl.value.text}.");
+                  await DataRepository.saveProfile(_userFirstNameControl.value.text, _userLastNameControl.value.text,_userPhoneControl.value.text, _userEmailControl.value.text);
 
                        },
                 child: Padding(

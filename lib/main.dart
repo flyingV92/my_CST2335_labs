@@ -47,12 +47,14 @@ class DataRepository{
     prefs.getString('Password');
   }
 
-    static loadProfile() {
-  // String[] profileData = new String;
-    prefs.getString('FirstName');
-    prefs.getString('LastName');
-    prefs.getString('UserPhone');
-    prefs.getString('UserEmail');
+    static loadProfile() async {
+    var profileData;
+    assert(profileData.length == 4);
+    profileData[0] = await prefs.getString('FirstName');
+    profileData[1] = await prefs.getString('LastName');
+    profileData[2]  = await prefs.getString('UserPhone');
+    profileData[3] = await prefs.getString('UserEmail');
+    return profileData;
   }
 
   //this function should save the variables to EncryptedSharedPreferences.
@@ -61,21 +63,28 @@ class DataRepository{
    prefs.setString('Password', userPassword);
  }
 
- static saveProfile(String userFirstName, String userLastName, String userPhone, String userEmail) {
-    prefs.setString('FirstName', userFirstName);
-    prefs.setString('LastName', userLastName);
-    prefs.setString('UserPhone', userPhone);
-    prefs.setString('UserEmail', userEmail);
-    print (prefs.getString('UserEmail'));
+ static saveProfile(String userFirstName, String userLastName, String userPhone, String userEmail) async {
+   await prefs.setString('FirstName', userFirstName);
+   await prefs.setString('LastName', userLastName);
+   await prefs.setString('UserPhone', userPhone);
+   await prefs.setString('UserEmail', userEmail);
+   print (await prefs.getString('FirstName'));
+   print (await prefs.getString('LastName'));
+   print (await prefs.getString('UserPhone'));
+   print (await prefs.getString('UserEmail'));
   }
 
-  static String userLoginName = '';
-  static String userPassword = '';
+  static String? userLoginName;
+  static String? userPassword;
 
-  static String? userFirstName;
-  static String? userLastName;
-  static String? userPhone;
-  static  String? userEmail;
+  static var userFirstName = '';
+  static var userLastName = '';
+  static var userPhone = '';
+  static var userEmail = '';
+
+  //static String? userLastName = '';
+  //static String? userPhone = '';
+  //static  String? userEmail = '';
  }
 
 class _MyHomePageState extends State<MyHomePage> {
