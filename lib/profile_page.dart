@@ -25,7 +25,7 @@ class OtherPageState extends State<OtherPage> {
 
   double? myFontSize = 18;
 
-  //********
+
   @override
   void initState() {
     super.initState();
@@ -34,10 +34,7 @@ class OtherPageState extends State<OtherPage> {
     _userLastNameControl = TextEditingController();
     _userPhoneControl = TextEditingController();
     _userEmailControl = TextEditingController();
-//TODO: review the lifecycle and get it to load the snackbar and widget with username at same time.
     loadProfile();
-    setState((){loginName = loginName2;});
-    displaySnack(input: loginName);
 }
 
 void loadProfile()async{
@@ -46,10 +43,9 @@ void loadProfile()async{
   _userLastNameControl.text = profileString[1];
   _userPhoneControl.text = profileString[2];
   _userEmailControl.text = profileString[3];
-  loginName2 = profileString[4];
-  print(profileString[4]);
-  print(loginName2);
-
+  //loginName2 = profileString[4];
+  setState((){loginName = profileString[4];});
+  displaySnack(input: loginName);
 }
 
   void etPhoneHome (String uriInput, String category)  {
@@ -71,7 +67,7 @@ void loadProfile()async{
           };
     canLaunchUrl(uriMethod).then((bool itCan) {
   //LAB 5 DEMO: FOR TESTING IF IF ERRORS WORK.
-     //itCan = true;
+     //itCan = false;
       if(itCan) {
         launchUrl(uriMethod);
         print(uriMethod);
