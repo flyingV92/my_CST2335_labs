@@ -48,12 +48,12 @@ class DataRepository{
   }
 
     static loadProfile() async {
-    var profileData;
-    assert(profileData.length == 4);
-    profileData[0] = await prefs.getString('FirstName');
-    profileData[1] = await prefs.getString('LastName');
-    profileData[2]  = await prefs.getString('UserPhone');
-    profileData[3] = await prefs.getString('UserEmail');
+    var profileData = [];
+    profileData.add(await prefs.getString('FirstName'));
+    profileData.add(await prefs.getString('LastName'));
+    profileData.add(await prefs.getString('UserPhone'));
+    profileData.add(await prefs.getString('UserEmail'));
+    profileData.add(await prefs.getString('Login'));
     return profileData;
   }
 
@@ -210,22 +210,16 @@ class _MyHomePageState extends State<MyHomePage> {
       else {
         _logincontrol.text = oldLogin;
         _passcontrol.text = oldPass;
-        final snackBar = SnackBar( content: Text('Credentials loaded.'),
-            action:SnackBarAction(label:'Hide', onPressed: (){ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            //    _logincontrol.text = '';
-            //   _passcontrol.text = '';
-            setState(() {
-              imageSource = imageSourceBase;
+         setState(() {
+            imageSource = imageSourceBase;
             });
-            }));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
+            };
         setState(()  {
           imageSource = imageSourcePass;
         }
         );
       }
-  }
+
 
   @override
   void dispose() {

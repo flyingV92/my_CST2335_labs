@@ -1,5 +1,6 @@
 
 
+
 import 'package:flutter/material.dart';
 import 'package:my_cst2335_labs/main.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -7,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class OtherPage extends StatefulWidget {
   const OtherPage({super.key});
+
 
   @override
   State<OtherPage> createState() => OtherPageState();
@@ -17,110 +19,69 @@ class OtherPageState extends State<OtherPage> {
   late TextEditingController _userLastNameControl;
   late TextEditingController _userPhoneControl;
   late TextEditingController _userEmailControl;
+   String loginName = '';
+   String loginName2 = '';
+  late var profileString;
+
   double? myFontSize = 18;
 
   //********
   @override
   void initState() {
     super.initState();
+
     _userFirstNameControl = TextEditingController();
     _userLastNameControl = TextEditingController();
     _userPhoneControl = TextEditingController();
     _userEmailControl = TextEditingController();
-
-    var openSnackBar = SnackBar(
-        content: Text("Welcome bac9k ${DataRepository.userLoginName} 9!"),
-        action: SnackBarAction(label: 'Hide', onPressed: () {}),
-        duration: Duration(seconds: 6));
-    WidgetsBinding.instance.addPostFrameCallback(
-            (_) => ScaffoldMessenger.of(context).removeCurrentSnackBar());
-    WidgetsBinding.instance.addPostFrameCallback(
-            (_) => ScaffoldMessenger.of(context).showSnackBar(openSnackBar));
-
-  pullLogin();
+//TODO: review the lifecycle and get it to load the snackbar and widget with username at same time.
+    loadProfile();
+    setState((){loginName = loginName2;});
+    displaySnack(input: loginName);
 }
-//*******
 
-  void pullLogin() async {
-    var oldFirst = await DataRepository.prefs.getString('FirstName');
-    var oldLast = await DataRepository.prefs.getString('LastName');
-    var oldPhone = await DataRepository.prefs.getString('UserPhone');
-    var oldEmail = await DataRepository.prefs.getString('UserEmail');
-    if (oldFirst == '' || oldLast == '' || oldPhone == '' || oldEmail == '') {
-      return;
-    }
-    else {
-      _userFirstNameControl.text = oldFirst;
-      _userLastNameControl.text = oldLast;
-      _userPhoneControl.text = oldPhone;
-      _userEmailControl.text = oldEmail;
+void loadProfile()async{
+  profileString = await DataRepository.loadProfile();
+  _userFirstNameControl.text = profileString[0];
+  _userLastNameControl.text = profileString[1];
+  _userPhoneControl.text = profileString[2];
+  _userEmailControl.text = profileString[3];
+  loginName2 = profileString[4];
+  print(profileString[4]);
+  print(loginName2);
 
-      final snackBar = SnackBar( content: Text('Credentials loaded.'),
-          action:SnackBarAction(label:'Hide', onPressed: (){ScaffoldMessenger.of(context).hideCurrentSnackBar();}));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
-  }
+}
 
   void etPhoneHome (String uriInput, String category)  {
-    Uri uriMethod;
+    late Uri uriMethod;
     switch (category) {
       case '1':
-       Uri uriMethod = Uri(scheme: 'tel', path: uriInput);
-
+       Uri uriMethod2 = Uri(scheme: 'tel', path: uriInput);
+       uriMethod = uriMethod2;
       break;
       case '2':
-        Uri uriMethod = Uri(scheme: 'sms', path: uriInput);
+        Uri uriMethod2 = Uri(scheme: 'sms', path: uriInput);
+        uriMethod = uriMethod2;
       break;
       case '3':
-        Uri uriMethod = Uri(scheme: 'mailto', path: uriInput,
+        Uri uriMethod2 = Uri(scheme: 'mailto', path: uriInput,
             queryParameters: {'subject': 'Email Subject Here!'});
+        uriMethod = uriMethod2;
       break;
           };
     canLaunchUrl(uriMethod).then((bool itCan) {
   //LAB 5 DEMO: FOR TESTING IF IF ERRORS WORK.
-     itCan = false;
-      if(itCan)
-    {
-      if(category == '1') {
-        final Uri smsUri = Uri(scheme: 'tel', path: uriInput.toString());
-        print(smsUri);
-        launchUrl(smsUri);
-      }
-      else if (category == '2') {
-        final Uri phoneUri = Uri(scheme:'sms', path: uriInput.toString());
-        print(phoneUri);
-        launchUrl(phoneUri);
-      }
-      else if (category == '3') {
-        final Uri emailUri = Uri(scheme: 'mailto', path: 'foo@foo.com',
-            queryParameters: {'subject': 'Email Subject Here!'});
-        print(emailUri);
-        launchUrl(emailUri);
-      }
-    }
+     //itCan = true;
+      if(itCan) {
+        launchUrl(uriMethod);
+        print(uriMethod);
+      } else {
 
-      /*
-      else {
-        var snackBar5 = (String? input) => SnackBar(content: Text(input ?? 'Non-specfic error'),
-            action:SnackBarAction(label:'Hide', onPressed: (){ScaffoldMessenger.of(context).hideCurrentSnackBar();}));
-
-        if(category ==  '1') {
-          var input = "Can't do SMS here.";
-          ScaffoldMessenger.of(context).showSnackBar(snackBar5(input));
-        }
-        else if(category == '2') {
-          var input = "Can't phone home.";
-          ScaffoldMessenger.of(context).showSnackBar(snackBar5(input));
-        }
-        else if(category == '3') {
-          var input = "Can't email on this device.";
-          ScaffoldMessenger.of(context).showSnackBar(snackBar5(input));
+          alertBox();
         };
-  }*/ else {
-alertBox();
-        };
+      });
   }
-    );}
+
 
   alertBox() {
     showDialog<String>(
@@ -128,7 +89,7 @@ alertBox();
       builder: (BuildContext context) => AlertDialog(
         title: const Text('Uri Error'),
         content:
-        const Text("Your device can't use that method."),
+        const Text("Your device can't use this URL."),
         actions: <Widget>[
           Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
             FilledButton(onPressed: () {;Navigator.pop(context);}, child: Text('OK')),
@@ -138,25 +99,27 @@ alertBox();
     );
   }
 
-  void showSnackBar3(String loginName) {
-    var loginTitle = loginName;
-    var snackBar2 = SnackBar(
-        content: Text("Welcome Back $loginTitle"),
-        action: SnackBarAction(
-            label: 'Hide',
-            onPressed: () {
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            }));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar2);
-  }
+  displaySnack({String input = 'user'}) {
+    var openSnackBar = SnackBar(
+        content: Text(
+            "Welcome back $input!"),
+        action: SnackBarAction(label: 'Close', onPressed: () {}),
+        duration: Duration(seconds: 4));
+    WidgetsBinding.instance.addPostFrameCallback(
+            (_) => ScaffoldMessenger.of(context).removeCurrentSnackBar());
+    WidgetsBinding.instance.addPostFrameCallback(
+            (_) => ScaffoldMessenger.of(context).showSnackBar(openSnackBar));
+        }
 
   @override
   Widget build(BuildContext context) {
+    var loginTitle = loginName;
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.cyan,
           title:
-              Text('Welcome to my other page, ${DataRepository.userLoginName} !'),
+              Text('Welcome to page two, $loginTitle!'),
         ),
         body: DecoratedBox(
             decoration: BoxDecoration(
@@ -167,7 +130,7 @@ alertBox();
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text('You hit page two, ${DataRepository.userLoginName} !',
+                  Text('Profile Page',
                       style: TextStyle(fontSize: 24.0)),
                   TextField(
                       controller: _userFirstNameControl,
