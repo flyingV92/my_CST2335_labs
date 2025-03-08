@@ -1,6 +1,7 @@
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'profile_page.dart';
+import 'shop.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
       home: const MyHomePage(title: 'gONQDRIVER - Mockup'),
       initialRoute:'/',
       routes:
-  { '/OtherPage': (context) => OtherPage(),
+  { '/Other2Page': (context) => Other2Page(),
   },
 
     );
@@ -117,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
         DataRepository.userLoginName = _logincontrol.text;
        // print(_passcontrol.text);
         Navigator.pop(context);
-        Navigator.pushNamed( context, '/OtherPage');
+        Navigator.pushNamed( context, '/Other2Page');
       }
       );
     }
