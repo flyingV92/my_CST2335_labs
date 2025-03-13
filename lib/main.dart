@@ -1,4 +1,11 @@
+import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
+import 'database.dart' as $Floor;
+import 'profile_page.dart';
+import 'shop.dart';
+import 'database.dart';
+import 'ingredient.dart';
+import 'ingredient_dao.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,27 +18,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'gonqDrive',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      debugShowCheckedModeBanner: false,
+      home: const MyHomePage(title: 'gONQDRIVER - Mockup'),
+      initialRoute:'/',
+      routes:
+  { '/Other2Page': (context) => Other2Page(),
+  },
+
     );
   }
 }
@@ -39,77 +37,252 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
+
+
+
+
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  var _counter = 0.0;
-  var myFontSize = 30.0;
+class DataRepository{
+  static final EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
 
-  void setNewValue(double value)
-  {
-    setState(() {
-      _counter = value;
-      myFontSize = value;
-    });
+  //this function should load the variables from EncryptedSharedPreferences
+  static loadData() {
+    prefs.getString('Login');
+    prefs.getString('Password');
+  }
+
+    static loadProfile() async {
+    var profileData = [];
+    profileData.add(await prefs.getString('FirstName'));
+    profileData.add(await prefs.getString('LastName'));
+    profileData.add(await prefs.getString('UserPhone'));
+    profileData.add(await prefs.getString('UserEmail'));
+    profileData.add(await prefs.getString('Login'));
+    return profileData;
+  }
+
+  //this function should save the variables to EncryptedSharedPreferences.
+ static saveData(String userLoginName, String userPassword) {
+   prefs.setString('Login', userLoginName);
+   prefs.setString('Password', userPassword);
+ }
+
+ static saveProfile(String userFirstName, String userLastName, String userPhone, String userEmail) async {
+   await prefs.setString('FirstName', userFirstName);
+   await prefs.setString('LastName', userLastName);
+   await prefs.setString('UserPhone', userPhone);
+   await prefs.setString('UserEmail', userEmail);
+   print (await prefs.getString('FirstName'));
+   print (await prefs.getString('LastName'));
+   print (await prefs.getString('UserPhone'));
+   print (await prefs.getString('UserEmail'));
+  }
+
+  static String? userLoginName;
+  static String? userPassword;
+
+  static var userFirstName = '';
+  static var userLastName = '';
+  static var userPhone = '';
+  static var userEmail = '';
+
+  //static String? userLastName = '';
+  //static String? userPhone = '';
+  //static  String? userEmail = '';
+ }
+
+class _MyHomePageState extends State<MyHomePage> {
+
+
+  //var _counter = 0.0;
+  var myFontSize = 50.0;
+  late bool passCheck;
+  late TextEditingController _logincontrol;
+  late TextEditingController _passcontrol;
+  var imageSource = '../images/qmark.png';
+  var imageSourceBase = '../images/Qmark.png';
+  var imageSourcePass = '../images/bulb.png';
+  var imageSourceFail = '../images/stop.png';
+  final EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
+
+  void saveLoginDetails()  {
+    if (_logincontrol.value.text == "" || _passcontrol.value.text == "") {
+      emptyFields();
+
+      return;
+    }
+    else if (_passcontrol.value.text == 'QWERTY123') {
+      setState(()  {
+        imageSource = imageSourcePass;
+
+        DataRepository.userLoginName = _logincontrol.value.text;
+        DataRepository.userPassword = _passcontrol.value.text;
+        DataRepository.saveData(_logincontrol.value.text, _passcontrol.value.text );
+      //  DataRepository.prefs.setString('Password', _passcontrol.value.text);
+        //print(_logincontrol.text);
+        DataRepository.userLoginName = _logincontrol.text;
+       // print(_passcontrol.text);
+        Navigator.pop(context);
+        Navigator.pushNamed( context, '/Other2Page');
+      }
+      );
+    }
+    else {
+      setState(() {
+        imageSource = imageSourceFail;
+        Navigator.pop(context);
+      });
+    }
+
+    }
+
+
+   clearLogin() async {
+    await prefs.remove('LoginName');
+    await prefs.remove('Password');
+  }
+
+  void closeBox() {
+    Navigator.pop(context);
+
+  }
+
+  void emptyFields() {
+    showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: const Text('Empty Fields'),
+              content: const Text('Login or Pass is empty'),
+              actions: <Widget>[
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      FilledButton(onPressed: () {clearLogin();Navigator.pop(context);}, child: Text('OK'))
+                    ])
+              ],
+            ));
+  }
+/*
+  setImageChange() {
+    if (_passcontrol.value.text == 'QWERTY123') {
+      setState(() {
+        imageSource = imageSourcePass;
+      });
+    } else {
+      setState(() {
+        imageSource = imageSourceFail;
+      });
+    }
+  }
+*/
+
+  alertBox() {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('You pressed login.'),
+        content:
+            const Text('Want to save your username/password for next time?'),
+        actions: <Widget>[
+          Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+            FilledButton(onPressed: () {clearLogin();Navigator.pop(context);}, child: Text('Cancel')),
+            FilledButton(
+                onPressed: () {
+                  saveLoginDetails();
+                  //setImageChange();
+                },
+                child: Text('OK'))
+          ])
+        ],
+      ),
+    );
+  }
+
+  @override
+  void initState()  {
+    super.initState();
+    _logincontrol = TextEditingController();
+    _passcontrol = TextEditingController();
+    pullLogin();
+
+
   }
 
 
-  void _incrementCounter() {
-    setState(() {
-          if( _counter<=99.0)
-        _counter++;
-    });
+
+
+  void pullLogin() async {
+      var oldLogin = await DataRepository.prefs.getString("Login");
+      var oldPass = await DataRepository.prefs.getString('Password');
+      if (oldLogin == '' || oldPass == '') {
+        return;
+      }
+      else {
+        _logincontrol.text = oldLogin;
+        _passcontrol.text = oldPass;
+         setState(() {
+            imageSource = imageSourceBase;
+            });
+            };
+        setState(()  {
+          imageSource = imageSourcePass;
+        }
+        );
+      }
+
+
+  @override
+  void dispose() {
+    _passcontrol.dispose();
+    _logincontrol.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-             Text(
-              'You have pushed the button this many times:',
-                style: TextStyle(fontSize: myFontSize )
-            ),
-            Text(
-              '$_counter',
-              style: TextStyle(fontSize: myFontSize )
-            ),
-
-            Slider(value: _counter, max:100.0, onChanged: setNewValue, min: 0.0)
-          ],
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          // Here we take the value from the MyHomePage object that was created by
+          // the App.build method, and use it to set our appbar title.
+          title: Text(widget.title),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+        body: DecoratedBox(
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage("images/algonquin.jpg"), opacity: 0.2)),
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Text('Login Window', style: TextStyle(fontSize: myFontSize)),
+                  TextField(
+                      controller: _logincontrol,
+                      decoration: InputDecoration(
+                          hintText: "Username/Email",
+                          labelText: "Enter your username",
+                          border: OutlineInputBorder()),
+                      obscureText: false,
+                      style: TextStyle(fontSize: myFontSize)),
+                  TextField(
+                    controller: _passcontrol,
+                    decoration: InputDecoration(
+                        hintText: "Password",
+                        labelText: "Enter your password",
+                        border: OutlineInputBorder()),
+                    obscureText: true,
+                    style: TextStyle(fontSize: myFontSize),
+                  ),
+                  ElevatedButton(
+                    onPressed: alertBox,
+                    child: Padding(
+                        padding: EdgeInsets.all(10.0), child: Text('Login')),
+                  ),
+                  Image.asset(imageSource, width: 300, height: 300)
+                ])));
   }
 }
