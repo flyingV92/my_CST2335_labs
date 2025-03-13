@@ -1,6 +1,9 @@
+import 'package:floor/floor.dart';
 import 'package:flutter/material.dart';
-
-
+import 'package:sqflite/sqflite.dart' as sqflite;
+import 'database.dart';
+import 'ingredient.dart';
+import 'ingredient_dao.dart';
 
 class Other2Page extends StatefulWidget {
   const Other2Page({super.key});
@@ -9,6 +12,8 @@ class Other2Page extends StatefulWidget {
   State<Other2Page> createState() => OtherPage2State();
 }
 
+
+@entity
 class OtherPage2State extends State<Other2Page> {
   late TextEditingController _ingredientControl;
   late TextEditingController _quantityControl;
@@ -19,34 +24,61 @@ class OtherPage2State extends State<Other2Page> {
   double? myFontSize = 18;
   List<String> ingredientArray = [];
   List<String> quantityArray =  [];
+  List<IngredientDB> myList = [];
+  List<Ingredient> list = [];
+  late IngredientDao ingredientDao;
 
   @override
   void initState() {
     super.initState();
     _ingredientControl = TextEditingController();
     _quantityControl = TextEditingController();
+
+    databaseStuff();
   }
 
-  void manageArrays(String ingredientValue, String quantityValue){
+  void manageArrays(String ingredientValue, String quantityValue) async {
 
-    setState(() {
-      ingredientArray.add(ingredientValue);
-      quantityArray.add(quantityValue);
-      print(ingredientArray + quantityArray);
-      });
-  }
 
-  void handleLongPress(var rowNum){
-    Navigator.pop(context);
-    setState(() {
-      ingredientArray.removeAt(rowNum);
-      quantityArray.removeAt(rowNum);
+    IngredientDB ingredient = new IngredientDB(
+        null, ingredientValue, quantityValue);
+    //String results = ingredient.toString();
+    //List<String> results2 = results.split(":");
+    //IngredientDB ingredient2 = new IngredientDB(int.parse(results2[0]), results[1], results[2]);
+    await ingredientDao.insertIngredient(ingredient);
+    List<IngredientDB>myList2 = await ingredientDao.findAllIngredients();
+    myList = myList2;
+    setState(()  {
 
     });
   }
 
+  void handleLongPress(String ingredientName) async {
+    Navigator.pop(context);
+    ingredientDao.delete(ingredientName);
+    List<IngredientDB>myList2 = await ingredientDao.findAllIngredients();
+    myList = myList2;
+    setState(()  {
+
+    });
+  }
+
+  void databaseStuff() async{
+    final database = await AppDatabase.accessDb();
+    ingredientDao = database!.ingredientDao;
+    database.ingredientDao.findAllIngredients().then(
+            (list)
+        {
+          setState((){
+
+            myList = list;
+          } );
+        }
+        );
+  }
+
 //dialog box
-  alertBox(var rowNum) {
+  alertBox(var rowNum, String ingredientName) {
     var numNum = rowNum.toString();
     showDialog<String>(
       context: context,
@@ -62,7 +94,8 @@ class OtherPage2State extends State<Other2Page> {
                 },
                 child: Text('No')),
             FilledButton(
-                onPressed: () => handleLongPress(rowNum),
+               onPressed: () => handleLongPress(ingredientName),
+              //onPressed() => ingredientDao.delete(rowNum);
                 child: Text('Yes'))
           ])
         ],
@@ -98,7 +131,7 @@ class OtherPage2State extends State<Other2Page> {
                           obscureText: false,
                           style: TextStyle(fontSize: myFontSize))),
 
-                    //add to list button here.
+
                     ElevatedButton.icon(
                       onPressed: () {
                         manageArrays(_ingredientControl.text, _quantityControl.text);
@@ -109,25 +142,13 @@ class OtherPage2State extends State<Other2Page> {
                       label: const Text('ADD IT'),
                          )]),
 
-              /*Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Padding(
-                          padding: EdgeInsets.all(2.0),
-                          child: Text('manage items')),
-                    ),
-
-              ])*/
-
             Expanded(child: ListView.builder(
-                itemCount: ingredientArray.length,
-                itemBuilder: (context, rowNum) {return GestureDetector(onLongPress: ()=> alertBox(rowNum),
+                itemCount: myList.length,
+                itemBuilder: (context, rowNum) {
+                  IngredientDB ingredient = myList[rowNum];
+                  return GestureDetector(onLongPress: ()=> alertBox(rowNum, ingredient.ingredientName),
                   child: Row( mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [Text(ingredientArray[rowNum]),Text(quantityArray[rowNum])]
+                    children: [Text(ingredient.ingredientName),Text(ingredient.ingredientQuantity)]
                 ));
                 },
                 )

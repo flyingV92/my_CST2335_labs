@@ -1,7 +1,11 @@
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
+import 'database.dart' as $Floor;
 import 'profile_page.dart';
 import 'shop.dart';
+import 'database.dart';
+import 'ingredient.dart';
+import 'ingredient_dao.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,6 +38,10 @@ class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
   final String title;
+
+
+
+
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -89,6 +97,8 @@ class DataRepository{
  }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+
   //var _counter = 0.0;
   var myFontSize = 50.0;
   late bool passCheck;
@@ -199,7 +209,11 @@ class _MyHomePageState extends State<MyHomePage> {
     _logincontrol = TextEditingController();
     _passcontrol = TextEditingController();
     pullLogin();
-    }
+
+
+  }
+
+
 
 
   void pullLogin() async {
