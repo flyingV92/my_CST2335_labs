@@ -1,36 +1,33 @@
-// database.dart
 
-// required package imports
 import 'dart:async';
-
 import 'package:floor/floor.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
-import 'ingredient_dao.dart';
-import 'ingredient.dart';
+import 'ToDoItem_dao.dart';
+import 'ToDoItem.dart';
 part 'database.g.dart'; // the generated code will be there
 
-@Database(version: 1, entities: [IngredientDB])
-abstract class AppDatabase extends FloorDatabase {
-  IngredientDao get ingredientDao;
+@Database(version: 1, entities: [ToDoDb])
 
-  static AppDatabase? myDataBase;
+abstract class ToDoDataBase extends FloorDatabase {
+  ToDoItemDao get toDoItemDao;
 
-  AppDatabase.privateConstructor();
+  static ToDoDataBase? myDataBase;
 
-  static Future<AppDatabase?> accessDb() async {
-    myDataBase ??= await $FloorAppDatabase.databaseBuilder('app_database.db').build();
-    return myDataBase;
+  static Future<ToDoDataBase?> accessDb() async {
+    myDataBase ??= await $FloorToDoDataBase.databaseBuilder('app_database.db').build();
+    return myDataBase!;
   }
 
 }
 
 @entity
-class IngredientDB {
+class ToDoDb {
   @PrimaryKey(autoGenerate:true)
   final int? id;
-  final String ingredientName;
-  final String ingredientQuantity;
+  final String toDoName;
+  final String toDoDeets;
 
-  IngredientDB(this.id, this.ingredientName, this.ingredientQuantity);
+
+  ToDoDb(this.id, this.toDoName, this.toDoDeets);
 }
 
