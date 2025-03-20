@@ -12,17 +12,15 @@ class Other2Page extends StatefulWidget {
 }
 
 
-@entity
+
 class OtherPage2State extends State<Other2Page> {
   late TextEditingController _toDoNameController;
   late TextEditingController _toDoDeetsController;
-  String loginName = '';
-  String loginName2 = '';
-  late var profileString;
   double? myFontSize = 18;
   List<ToDoDb> myList = [];
   List<ToDoItem> list = [];
   late ToDoItemDao toDoItemDao;
+  ToDoDb itemSelected = new ToDoDb(null, " ", " ");
 
   @override
   void initState() {
@@ -32,14 +30,12 @@ class OtherPage2State extends State<Other2Page> {
     databaseStuff();
   }
 
+
   void addToDoItem(String toDoName, String toDoDeets) async {
-    print('r54534sdfdsfSFDFDFDFd');
     ToDoDb toDoDb = new ToDoDb(null, toDoName, toDoDeets);
     await toDoItemDao.insertToDoItem(toDoDb);
     List<ToDoDb>myList2 = await toDoItemDao.findAllToDos();
     myList = myList2;
-    print(myList);
-    print('99999');
     setState(() {});
   }
 
@@ -48,12 +44,14 @@ class OtherPage2State extends State<Other2Page> {
     toDoItemDao.delete(toDoName);
     List<ToDoDb>myList2 = await toDoItemDao.findAllToDos();
     myList = myList2;
-    setState(() {});
+    setState(() {itemSelected = ToDoDb(null, " ", " ");});
   }
 
   void databaseStuff() async{
     final database = await ToDoDataBase.accessDb();
-    toDoItemDao = database!.toDoItemDao;
+    if (database != null) {
+      toDoItemDao = database.toDoItemDao;
+
     database.toDoItemDao.findAllToDos().then(
         (list)
         {
@@ -63,9 +61,10 @@ class OtherPage2State extends State<Other2Page> {
         }
       );
     }
+    }
 
 //Handle deletes
-  void callDeleteOption(var rowNum, String toDoName) {
+  void callDeleteOption(ToDoDb toDoDb) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -77,13 +76,93 @@ class OtherPage2State extends State<Other2Page> {
                 onPressed: () {Navigator.pop(context);},
                 child: Text('No')),
             FilledButton(
-                onPressed: () => deleteToDoItem(toDoName),
+                onPressed: () => deleteToDoItem(toDoDb.toDoName),
                 child: Text('Yes'))
           ])
         ],
       ),
     );
   }
+
+  Widget toDoList() {
+      return
+        ListView.builder(
+          itemCount: myList.length,
+          itemBuilder: (context, rowNum) {
+            ToDoDb toDoDb = myList[rowNum];
+            return
+            GestureDetector(onTap: ()=> {setState((){itemSelected = toDoDb;})},
+                child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text(toDoDb.toDoName)
+                      ]
+            ));
+          },
+        );
+  }
+
+
+  Widget detailsPage() {
+      return Column(mainAxisAlignment: MainAxisAlignment.start,
+        children: [Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text((itemSelected.id.toString())),
+                  Text(itemSelected.toDoName)]),
+        Row(mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              ElevatedButton.icon(
+              onPressed: () {
+               setState(() {
+                 callDeleteOption(itemSelected);
+               }
+               );
+             },
+        icon: const Icon(Icons.add),
+        label: const Text('Delete It'),
+          )]
+    )
+    ]);
+  }
+
+  Widget reactiveLayout() {
+    var size = MediaQuery.sizeOf(context);
+    var height = size.height;
+    var width = size.width;
+    if ((width > height) && (width > 720)) {
+      return
+        Row(
+            children: [
+              Expanded(
+                  flex: 1,
+                  child: toDoList()
+              ),
+              Expanded(
+                  flex: 2,
+                  child: detailsPage()
+              )
+            ]
+        );
+    }
+    else if (height > width) {
+      return
+        Row(
+            children: [
+              Expanded(
+                  flex: 1,
+                  child: toDoList()
+              ),
+              Expanded(
+                  flex: 2,
+                  child: detailsPage()
+              )
+            ]
+        );
+    }
+    else{
+    return toDoList();
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -103,14 +182,14 @@ class OtherPage2State extends State<Other2Page> {
                         labelText: "To Do Name Goes Here",
                         border: OutlineInputBorder()),
                     style: TextStyle(fontSize: myFontSize))),
-/*
+
                   Flexible (child: TextField(
                       controller: _toDoDeetsController,
                       decoration: InputDecoration(
                           labelText: "To Do Details Go Here",
                           border: OutlineInputBorder()),
                     style: TextStyle(fontSize: myFontSize))),
-*/
+
                   ElevatedButton.icon(
                     onPressed: () {
                       addToDoItem(_toDoNameController.text, _toDoDeetsController.text);
@@ -122,20 +201,13 @@ class OtherPage2State extends State<Other2Page> {
                     )
                 ]
             ),
+            Expanded(child:
+                reactiveLayout())
 
-            Expanded(child: ListView.builder(
-              itemCount: myList.length,
-              itemBuilder: (context, rowNum) {
-                ToDoDb toDoDb = myList[rowNum];
-                return GestureDetector(onLongPress: ()=> callDeleteOption(rowNum, toDoDb.toDoName),
-                    child: Row( mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [Text(toDoDb.toDoName)]
-                    ));
-              },
-            )
-            )
-          ],
+            //reactiveLayout()
+    ]
         )
     );
+
   }
 }
