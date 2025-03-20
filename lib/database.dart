@@ -14,7 +14,7 @@ abstract class ToDoDataBase extends FloorDatabase {
   static ToDoDataBase? myDataBase;
 
   static Future<ToDoDataBase?> accessDb() async {
-    myDataBase ??= await $FloorToDoDataBase.databaseBuilder('app_database.db').build();
+    myDataBase ??= await $FloorToDoDataBase.databaseBuilder('app_database2.db').build();
     return myDataBase!;
   }
 

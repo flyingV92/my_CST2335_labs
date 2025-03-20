@@ -134,14 +134,14 @@ class _$ToDoItemDao extends ToDoItemDao {
 
   @override
   Future<List<ToDoDb>> findAllToDos() async {
-    return _queryAdapter.queryList('SELECT * FROM ToDoDB',
+    return _queryAdapter.queryList('SELECT * FROM ToDoDb',
         mapper: (Map<String, Object?> row) => ToDoDb(row['id'] as int?,
             row['toDoName'] as String, row['toDoDeets'] as String));
   }
 
   @override
   Future<void> delete(String toDoName) async {
-    await _queryAdapter.queryNoReturn('DELETE FROM ToDoDB WHERE toDoName = ?1',
+    await _queryAdapter.queryNoReturn('DELETE FROM ToDoDb WHERE toDoName = ?1',
         arguments: [toDoName]);
   }
 

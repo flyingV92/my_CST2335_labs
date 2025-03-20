@@ -5,10 +5,10 @@ import 'package:floor/floor.dart';
 @dao
 abstract class ToDoItemDao {
 
-  @Query('SELECT * FROM ToDoDB')
+  @Query('SELECT * FROM ToDoDb')
   Future<List<ToDoDb>> findAllToDos();
 
-  @Query('DELETE FROM ToDoDB WHERE toDoName = :toDoName')
+  @Query('DELETE FROM ToDoDb WHERE toDoName = :toDoName')
   Future<void> delete(String toDoName);
 
   @insert

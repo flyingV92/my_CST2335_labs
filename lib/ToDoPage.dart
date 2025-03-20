@@ -33,10 +33,13 @@ class OtherPage2State extends State<Other2Page> {
   }
 
   void addToDoItem(String toDoName, String toDoDeets) async {
+    print('r54534sdfdsfSFDFDFDFd');
     ToDoDb toDoDb = new ToDoDb(null, toDoName, toDoDeets);
     await toDoItemDao.insertToDoItem(toDoDb);
     List<ToDoDb>myList2 = await toDoItemDao.findAllToDos();
     myList = myList2;
+    print(myList);
+    print('99999');
     setState(() {});
   }
 
@@ -100,14 +103,14 @@ class OtherPage2State extends State<Other2Page> {
                         labelText: "To Do Name Goes Here",
                         border: OutlineInputBorder()),
                     style: TextStyle(fontSize: myFontSize))),
-
+/*
                   Flexible (child: TextField(
                       controller: _toDoDeetsController,
                       decoration: InputDecoration(
                           labelText: "To Do Details Go Here",
                           border: OutlineInputBorder()),
                     style: TextStyle(fontSize: myFontSize))),
-
+*/
                   ElevatedButton.icon(
                     onPressed: () {
                       addToDoItem(_toDoNameController.text, _toDoDeetsController.text);
