@@ -96,7 +96,7 @@ class _$ToDoDataBase extends ToDoDataBase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `ToDoDb` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `toDoName` TEXT NOT NULL, `toDoDeets` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `ToDoDb` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `toDoName` TEXT NOT NULL)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -118,11 +118,8 @@ class _$ToDoItemDao extends ToDoItemDao {
         _toDoDbInsertionAdapter = InsertionAdapter(
             database,
             'ToDoDb',
-            (ToDoDb item) => <String, Object?>{
-                  'id': item.id,
-                  'toDoName': item.toDoName,
-                  'toDoDeets': item.toDoDeets
-                });
+            (ToDoDb item) =>
+                <String, Object?>{'id': item.id, 'toDoName': item.toDoName});
 
   final sqflite.DatabaseExecutor database;
 
@@ -135,8 +132,8 @@ class _$ToDoItemDao extends ToDoItemDao {
   @override
   Future<List<ToDoDb>> findAllToDos() async {
     return _queryAdapter.queryList('SELECT * FROM ToDoDb',
-        mapper: (Map<String, Object?> row) => ToDoDb(row['id'] as int?,
-            row['toDoName'] as String, row['toDoDeets'] as String));
+        mapper: (Map<String, Object?> row) =>
+            ToDoDb(row['id'] as int?, row['toDoName'] as String));
   }
 
   @override
