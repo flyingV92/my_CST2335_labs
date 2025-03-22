@@ -1,4 +1,3 @@
-import 'ToDoItem.dart';
 import 'database.dart';
 import 'package:floor/floor.dart';
 
